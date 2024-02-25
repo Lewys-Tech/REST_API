@@ -21,4 +21,23 @@ def book_create(request):
     
     else:
         return Response(serializer.errors)
+    
+@api_view(['GET', 'PUT', 'DELETE'])   
+def book(request, pk):
+    try:
+        book = Book.objects.get(pk=pk)
+    except Book.DoesNotExist:
+        return Response(status=404)
+    
+    if request.method == 'GET':
+        serializer = BookSerializer(book)
+        return Response(serializer.data)
+    
+    if request.method == "PUT":
+        serializer = BookSerializer(book, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+        
    
