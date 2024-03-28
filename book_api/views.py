@@ -77,7 +77,28 @@ class BookCreate(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class Book(APIView):
-    def get(self, request):
+    
+    def get_book_by_pk(self, pk):
+        try:
+           book = Book.objects.get(pk=pk)
+        except Book.DoesNotExist:
+           return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        
+    def get(self, request, pk):
+        book = self.get_book_by_pk(pk)
+        serializer = BookSerializer(book)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        
+    def put(self, request, pk):
+       
+       book = self.get_book_by_pk(pk)
+       serializer = BookSerializer(book, data=request.data)
+       if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)     
         
         
                 
